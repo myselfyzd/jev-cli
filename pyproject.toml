@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "jev-cli"
+version = "1.0.0"
+description = "聊天回复决策辅助（命令行版）：结构化判断 -> 生成 3 条候选 -> 判断模型排序"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "yzddhr" }]
+keywords = ["chat", "assistant", "jev", "deepseek", "prompt-engineering"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Environment :: Console",
+]
+dependencies = []
+
+[project.scripts]
+jev = "jev.cli:main"
+
+[tool.setuptools]
+packages = ["jev"]

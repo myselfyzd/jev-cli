@@ -1,0 +1,21 @@
+# 密钥与本地状态
+.env
+*.key
+secrets.*
+
+# 分析记录与报告（本地产物，不入库）
+logs/
+report/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+build/
+dist/
+
+# 编辑器 / 系统
+.idea/
+.vscode/
+.DS_Store
