@@ -191,6 +191,19 @@ jev config set fixtures ~/jev-cli/fixtures/my_set.json
 jev calibrate
 ```
 
+### 调试：看每一步的原始请求/响应
+
+想知道它到底发了什么、模型回了什么，开一个抓包目录就行（Authorization 头会自动脱敏）：
+
+```bash
+JEV_TRACE_DIR=/tmp/trace jev analyze chat.txt -r 情侣
+ls /tmp/trace
+# 01-judge.json  02-draft.json  03-rank.json
+```
+
+每个文件里是 `{"step":1,"label":"judge","url":"...","request":{"headers":{...},"body":{...}},"response":{...}}`，
+其中 `request.body.messages` 就是完整 prompt，`response.usage` 是这次消耗的 token。
+
 ## 7. 记录与回看
 
 每次分析都会在 `logs/` 落一份 JSON（对话、判断、候选、排序、耗时、token），

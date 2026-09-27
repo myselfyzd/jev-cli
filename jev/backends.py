@@ -71,7 +71,7 @@ class DeepSeekJudge(JudgeBackend):
             self.api_key,
             [{"role": "system", "content": self._system},
              {"role": "user", "content": f"关系：{relationship}\n对话：\n{_transcript(messages)}"}],
-            model=self.model, temperature=0.2, timeout=90)
+            model=self.model, temperature=0.2, timeout=90, label="judge")
         try:
             raw = json.loads(content)
         except json.JSONDecodeError as exc:
@@ -101,7 +101,7 @@ class JevJudge(JudgeBackend):
 
     def judge(self, messages, relationship):
         response = openrouter_decisions(self.api_key, build_state(messages, relationship),
-                                        QUESTIONS, model=self.model)
+                                        QUESTIONS, model=self.model, label="judge")
         answers = response.get("answers") or {}
         judgment = Judgment(confidence={})
         for name, answer in answers.items():
@@ -158,7 +158,7 @@ class Writer:
              {"role": "user", "content":
               f"关系：{relationship}\n判断：{json.dumps(self._constraint(judgment), ensure_ascii=False)}\n"
               f"对话：\n{_transcript(messages)}"}],
-            model=self.model, temperature=0.8, timeout=90)
+            model=self.model, temperature=0.8, timeout=90, label="draft")
         try:
             replies = json.loads(content).get("replies") or []
         except json.JSONDecodeError as exc:
@@ -204,7 +204,7 @@ class DeepSeekRanker(Ranker):
              {"role": "user", "content":
               f"判断：{json.dumps(constraint, ensure_ascii=False)}\n对话：\n{_transcript(messages)}\n"
               f"候选：\n{numbered}"}],
-            model=self.model, temperature=0.1, timeout=90)
+            model=self.model, temperature=0.1, timeout=90, label="rank")
         try:
             raw = json.loads(content)
             index = int(raw.get("best_index", 0))
@@ -223,7 +223,7 @@ class JevRanker(Ranker):
     def rank(self, messages, relationship, judgment, replies):
         names = ("reply_a", "reply_b", "reply_c")
         response = openrouter_decisions(self.api_key, build_state(messages, relationship),
-                                        build_rank_question(replies), model=self.model)
+                                        build_rank_question(replies), model=self.model, label="rank")
         answer = (response.get("answers") or {}).get("best_reply") or {}
         chosen = str(answer.get("choice", ""))
         index = names.index(chosen) if chosen in names else 0
